@@ -175,7 +175,7 @@ public class FundsAllocationTest {
         explist.add(hMapPortfolio);
 
         //Main.redistributeFunds(balanceAmt, hMapPortfolio);
-        List<HashMap<String,Double>>  finalList = Main.redistributeFunds2(plans, deposits, explist);
+        List<HashMap<String,Double>>  finalList = Main.redistributeFunds(plans, deposits, explist);
         //Main.redistributeFunds2(balanceAmt, hMapPortfolio);
         System.out.println("TEST-tesRedistributeFunds - Final allocation:" + finalList + ".Total : " + totalAllocated);
         assertEquals(totalDeposits,totalAllocated);

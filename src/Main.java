@@ -37,11 +37,10 @@ public class Main {
         //Allocate funds from bank transfer
         List<HashMap<String, Double>> finalAlloc = allocateFunds(plans, deposits);
 
-        //List<HashMap<String, Double>> redistributed = redistributeFunds2(plans, deposits, finalAlloc);
         //Print out allocated funds
         System.out.println("=========Final allocation=============");
         finalAlloc.forEach(System.out::println);
-        //redistributed.forEach(System.out::println);
+
     }
 
     /**
@@ -62,14 +61,6 @@ public class Main {
             String depositRefCode = deposits.stream().findFirst()
                     .orElseGet(() -> new Deposit("N/A", 0.00)).getRefCode();
 
-            //Get total deposits by customer
-//            double totalDeposits = getTotalDeposits(deposits);
-//            System.out.println("Total deposits:" + totalDeposits);
-//            if(totalDeposits <= 0.00){
-//                System.out.println("No deposits to be allocated.");
-//                return finalAllocation;//early return if there are no deposits
-//            }
-
             HashMap<String,Double> hMapPortfolio = new HashMap<>();//Portfolios
             for(DepositPlan depositPlan: depositPlans){
                 //Check reference Code
@@ -87,21 +78,18 @@ public class Main {
                     else{
                         hMapPortfolio.computeIfPresent(portfolio.portfolioName(), (k, currDeposit) -> portfolio.amount() + currDeposit);
                     }
-                    //Check if planned deposit tallies with deposits made
-//                    totalDeposits-= portfolio.amount();
-
                 }
 
             }
 
             finalAllocation.add(hMapPortfolio); //Add Portfolio and it's allocation
-            redistributeFunds2(depositPlans, deposits,  finalAllocation); //Re-distribute funds is there are extras
+            redistributeFunds(depositPlans, deposits,  finalAllocation); //Re-distribute funds is there are extras
         }
 
     return finalAllocation;
     }
 
-    public static List<HashMap<String, Double>> redistributeFunds2(List<DepositPlan> depositPlans, List<Deposit> deposits, List<HashMap<String, Double>> portfolios){
+    public static List<HashMap<String, Double>> redistributeFunds(List<DepositPlan> depositPlans, List<Deposit> deposits, List<HashMap<String, Double>> portfolios){
 
         if(portfolios.isEmpty()){
             return portfolios;//early return if there are no Portfolios
@@ -148,54 +136,13 @@ public class Main {
                     System.out.println("Funds deposited is short of : " + abs(fmtBalance));
 
                 }
-            };
+            }
 
         }
 
         return portfolios;
     }
 
-
-    public static void redistributeFunds(double allocBalance, HashMap<String, Double> hMap){
-        if(hMap.isEmpty()){
-            return;//early return if there are no Portfolios
-        }
-        double fmtBalance = formatPrecision(allocBalance, DISPLAY_PRECISION);
-        double decimalPart = formatPrecision(getDecimals(fmtBalance),DISPLAY_PRECISION);
-
-        if(fmtBalance == 0.00){
-            System.out.println("Funds are fully allocated.");
-        }
-        else if(fmtBalance > 0.00){
-            System.out.println("There are leftover funds of : " + fmtBalance);
-            if(fmtBalance > 1.00 ) {
-                if (decimalPart <= 0.10 && decimalPart != 0.00) {
-                    //Distribute the fraction to the first found fund
-                    String fundName = hMap.keySet().stream().findFirst().orElse("N/A");
-                    hMap.computeIfPresent(fundName, (k, currAmt) -> currAmt + decimalPart);
-                }
-                double amtToBeDist = formatPrecision((fmtBalance - decimalPart)/ hMap.size(), CALCULATE_PRECISION);
-                System.out.println("The amount to be allocate to each fund : " + amtToBeDist + " and " + decimalPart +" to the first fund.");
-                hMap.keySet().forEach(portfolio -> {
-                    hMap.computeIfPresent(portfolio, (k, currValue) -> currValue + amtToBeDist);
-                });
-                double finalAmount = hMap.values().stream().reduce(Double::sum).orElse(0.00);
-                System.out.println("Redistributed amount : " + formatPrecision(abs(finalAmount), DISPLAY_PRECISION));
-
-            }
-            else{
-                double amtToBeDist = formatPrecision(fmtBalance, CALCULATE_PRECISION);
-                String fundName = hMap.keySet().stream().findFirst().orElse("N/A");
-                hMap.computeIfPresent(fundName, (k, currAmt) -> currAmt + amtToBeDist);
-            }
-
-        }
-        else {
-            System.out.println("Funds deposited is short of : " + abs(fmtBalance));
-
-        }
-
-    }
 
     public static boolean isExceededTotalPlan(ArrayList<DepositPlan> depositPlans){
         //Check number of plans
