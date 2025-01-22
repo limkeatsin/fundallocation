@@ -173,9 +173,11 @@ public class FundsAllocationTest {
         List<HashMap<String,Double>> explist = new ArrayList<>();
         explist.add(hMapPortfolio);
 
+
         List<HashMap<String,Double>>  finalList = Main.redistributeFunds(plans, deposits, explist);
+
         System.out.println("TEST-tesRedistributeFunds - Final allocation:" + finalList + ".Total : " + totalAllocated);
-        assertEquals(totalDeposits,totalAllocated);
+        assertArrayEquals(explist.toArray(),finalList.toArray());
 
     }
 
