@@ -169,11 +169,9 @@ public class Main {
 
         if(!errors.isEmpty()){
             System.out.println("Please check the following Deposit Plan and your deposits.");
-            errors.forEach( plan -> {
-                plan.getPlans().forEach( portfolio -> {
-                    System.out.println("Portfolio:"+portfolio.portfolioName()+ " Amount:" + portfolio.amount());
-                });
-            });
+            errors.forEach( plan -> plan.getPlans().forEach(portfolio -> {
+                System.out.println("Portfolio:"+portfolio.portfolioName()+ " Amount:" + portfolio.amount());
+            }));
         }
 
     }
