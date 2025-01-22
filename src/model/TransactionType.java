@@ -1,5 +1,5 @@
 package model;
 
 public enum TransactionType {
-    ONEOFF, FREQ;
+    ONEOFF, MONTHLY, QUARTER, ANNUAL
 }

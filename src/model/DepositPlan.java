@@ -1,35 +1,45 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Optional;
+
+import static util.Util.formatPrecision;
 
 public class DepositPlan {
 
-    private Double totalAmount = 0.00D;
-    private ArrayList<Deposit> fundList = new ArrayList<Deposit>();
+    private final ArrayList<Portfolio> depositPlans = new ArrayList<>();
+    private TransactionType planType;
+    private String referenceCode;
 
-    public DepositPlan(){}
 
-    public DepositPlan(ArrayList<Deposit> funds){
-        this.fundList = funds;
+    public DepositPlan(String refCode, String name, Double amount, TransactionType type){
+        addDeposit(refCode, name, amount, type);
     }
 
-    public Double getTotalAmount() {
-        return totalAmount;
+    public void addDeposit(String refCode, String name, Double amount, TransactionType type){
+        this.referenceCode = refCode;
+        this.planType = type;
+        Portfolio plan = new Portfolio(refCode, name, amount);
+        this.depositPlans.add(plan);
     }
 
-    public void setTotalAmount(Double totalAmount) {
-        this.totalAmount = totalAmount;
+    public ArrayList<Portfolio> getPlans() {
+        return depositPlans;
     }
 
-    public ArrayList<Deposit> getFundList() {
-        return fundList;
+    public TransactionType getPlanType() {
+        return planType;
     }
 
-    public void setFundList(ArrayList<Deposit> fundList) {
-        this.fundList = fundList;
+    public String getReferenceCode() {
+        return referenceCode;
     }
 
-    public void getTotalAllocation(){}
+    public Double totalAmount() {
+        Optional<Double> optPortfolios = this.getPlans().stream().map( Portfolio::amount).reduce(Double::sum);
+
+        return formatPrecision(optPortfolios.orElse(0.00),2);
+    }
 }
 
 
