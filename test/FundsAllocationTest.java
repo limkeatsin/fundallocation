@@ -66,7 +66,7 @@ public class FundsAllocationTest {
 
         System.out.println("=================================================================================");
         Deposit inv1 = new Deposit("CustomerA", 100.00);// Second deposit
-        Deposit inv2 = new Deposit("CustomerA", 1.09);//Extra deposits
+        Deposit inv2 = new Deposit("CustomerA", 3.51);//Extra deposits
         deposits.add(inv1);
         deposits.add(inv2);
 
@@ -167,16 +167,13 @@ public class FundsAllocationTest {
                 .stream()).mapToDouble(Double::doubleValue).sum();
 
         HashMap<String,Double> hMapPortfolio = new HashMap<>();
-        hMapPortfolio.put("High Risk", 1000.00);
-        hMapPortfolio.put("Retirement", 500.00);
-        hMapPortfolio.put("Retirement-2", 300.00);
+        hMapPortfolio.put("High Risk", 10000.00);
+        hMapPortfolio.put("Retirement", 900.00);
 
         List<HashMap<String,Double>> explist = new ArrayList<>();
         explist.add(hMapPortfolio);
 
-        //Main.redistributeFunds(balanceAmt, hMapPortfolio);
         List<HashMap<String,Double>>  finalList = Main.redistributeFunds(plans, deposits, explist);
-        //Main.redistributeFunds2(balanceAmt, hMapPortfolio);
         System.out.println("TEST-tesRedistributeFunds - Final allocation:" + finalList + ".Total : " + totalAllocated);
         assertEquals(totalDeposits,totalAllocated);
 

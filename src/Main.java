@@ -37,6 +37,8 @@ public class Main {
         //Allocate funds from bank transfer
         List<HashMap<String, Double>> finalAlloc = allocateFunds(plans, deposits);
 
+        reportError(errorNeousDepositPlans);
+
         //Print out allocated funds
         System.out.println("=========Final allocation=============");
         finalAlloc.forEach(System.out::println);
@@ -109,31 +111,24 @@ public class Main {
                 }
                 else if(fmtBalance > 0.00){
                     System.out.println("There are leftover funds of : " + fmtBalance);
-                    if(fmtBalance > 1.00 ) {
-                        if (decimalPart <= 0.10 && decimalPart != 0.00) {
-                            //Distribute the fraction to the first found fund
-                            String fundName = portfolio.keySet().stream().findFirst().orElse("N/A");
-                            portfolio.computeIfPresent(fundName, (k, currAmt) -> currAmt + decimalPart);
-                        }
-                        double amtToBeDist = formatPrecision((fmtBalance - decimalPart)/ portfolio.size(), CALCULATE_PRECISION);
-                        System.out.println("The amount to be allocate to each fund : " + amtToBeDist + " and " + decimalPart +" to the first fund.");
-                        portfolio.keySet().forEach(fund -> {
-                            portfolio.computeIfPresent(fund, (k, currValue) -> currValue + amtToBeDist);
-                        });
-                        double finalAmount = portfolio.values().stream().reduce(Double::sum).orElse(0.00);
-                        System.out.println("Redistributed portfolio amount : " + formatPrecision(abs(finalAmount), DISPLAY_PRECISION)
-                        + "->Portfolios: " + portfolio);
 
-                    }
-                    else{
-                        double amtToBeDist = formatPrecision(fmtBalance, CALCULATE_PRECISION);
-                        String fundName = portfolio.keySet().stream().findFirst().orElse("N/A");
-                        portfolio.computeIfPresent(fundName, (k, currAmt) -> currAmt + amtToBeDist);
-                    }
+                    //Distribute the fraction to the first found fund
+                    String fundName = portfolio.keySet().stream().findFirst().orElse("N/A");
+                    portfolio.computeIfPresent(fundName, (k, currAmt) -> currAmt + decimalPart);
+
+                    double amtToBeDist = formatPrecision((fmtBalance - decimalPart)/ portfolio.size(), CALCULATE_PRECISION);
+                    System.out.println("The amount to be allocate to each fund : " + amtToBeDist + " and " + decimalPart +" to the first fund.");
+                    portfolio.keySet().forEach(fund -> {
+                        portfolio.computeIfPresent(fund, (k, currValue) -> currValue + amtToBeDist);
+                    });
+                    double finalAmount = portfolio.values().stream().reduce(Double::sum).orElse(0.00);
+                    System.out.println("Redistributed portfolio amount : " + formatPrecision(abs(finalAmount), DISPLAY_PRECISION)
+                    + "->Portfolios: " + portfolio);
 
                 }
                 else {
                     System.out.println("Funds deposited is short of : " + abs(fmtBalance));
+                    errorNeousDepositPlans.addAll(depositPlans);
 
                 }
             }
@@ -163,5 +158,23 @@ public class Main {
             errorNeousDepositPlans.addAll(depositPlans);
             return false;//return early
         }
+    }
+
+    /**
+     * Report errors
+     *
+     * @param errors List of errors
+     */
+    public static void reportError(ArrayList<DepositPlan> errors){
+
+        if(!errors.isEmpty()){
+            System.out.println("Please check the following Deposit Plan and your deposits.");
+            errors.forEach( plan -> {
+                plan.getPlans().forEach( portfolio -> {
+                    System.out.println("Portfolio:"+portfolio.portfolioName()+ " Amount:" + portfolio.amount());
+                });
+            });
+        }
+
     }
 }
